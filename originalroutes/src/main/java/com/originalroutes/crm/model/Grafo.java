@@ -46,7 +46,7 @@ public class Grafo<Tipo> {
 		return vertice;
 	}
 	
-	public Aresta<Tipo> getAresta(Tipo dado){
+	public Aresta<Tipo> getAresta(String dado){
 		Aresta<Tipo> aresta = null;
 		for(int i=0; i < this.arestas.size(); i++) {
 			if (this.arestas.get(i).getInicio().equals(dado)){
@@ -81,7 +81,7 @@ public class Grafo<Tipo> {
 	public GrafoResposta buscaRotas(Tipo dadoInicio, Tipo dadoFim, Long maxStops) {
 		GrafoResposta grafos = new GrafoResposta(null);
 		ArrayList<Routes> rotas = new ArrayList<Routes>();
-		
+		Long numAttempts = 0L;
 		Aresta<Tipo> atual = null;
 		for(Aresta<Tipo> itens : this.arestas) {	
 		String caminho = itens.getInicio().getDado().toString();
@@ -89,9 +89,9 @@ public class Grafo<Tipo> {
 		Long stops = 0L;
 		atual = itens;		
 		if (itens.getInicio().getDado().equals(dadoInicio)) {
-			while (!caminho.contains(dadoFim.toString())) {
+			while (!caminho.contains(dadoFim.toString()) && numAttempts < 20) {
 				for(Aresta<Tipo> subitens : this.arestas) {
-					if (subitens.getInicio().getDado().equals(atual.getFim().getDado())) {
+					if (!subitens.getInicio().getDado().equals(atual.getFim().getDado())) {
 						atual = subitens;
 						if(!caminho.contains(subitens.getInicio().getDado().toString()) && !caminho.contains(subitens.getFim().getDado().toString()) && !caminho.contains(dadoFim.toString())) {
 							caminho = caminho+subitens.getInicio().getDado();
@@ -106,14 +106,113 @@ public class Grafo<Tipo> {
 							}
 						}
 					}
-				}
+					numAttempts = numAttempts+1;}
 			}
 		}
 		}
 		return grafos;
 	}
 	
+	public ArrayDistance calculaDistancia(ArrayList<String> array) {
+		ArrayDistance arrayDistance = new ArrayDistance();
+		ArrayList<Routes> rotas = new ArrayList<Routes>();
+		
+		Aresta<Tipo> atual = null;
+		
+		Long distancia = 0L;
+			
+
+		for(int i=0; i < array.size()-1; i++)
+		   {
+			
+			if (i < array.size()) {
+				Long loop = 0L;
+				for(Aresta<Tipo> itens : this.arestas) {
+					if (itens.getInicio().getDado().equals(array.get(i)) && itens.getFim().getDado().equals(array.get(i+1))) {
+						distancia = distancia+itens.getPeso();
+					}else {
+						loop = loop+1;	
+					}
+					if (loop == this.arestas.size()) {
+						System.out.println("-1");
+						loop = 0L;
+						arrayDistance.setDistance(loop-1);
+						return arrayDistance;
+					}	
+				}
+									
+			}
+						
+		   }
+		System.out.println(distancia);
+		arrayDistance.setDistance(distancia);
+		return arrayDistance;
+	}
+	
+	
+	public DistancePath buscaMelhorRota(Tipo dadoInicio, Tipo dadoFim) {
+		DistancePath grafos = new DistancePath(null,null);
+		Aresta<Tipo> atual = null;
+		
+		Long numAttempts = 0L;
+		Long menordistancia = -1L;
+		
+		String menorcaminho = "";
+		
+		for(Aresta<Tipo> itens : this.arestas) {	
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!");	
+		if (itens.getInicio().getDado().equals(dadoInicio)) {
+			String caminho = itens.getInicio().getDado().toString();
+			Long distancia = itens.getPeso();
+			caminho = caminho+itens.getFim().getDado().toString();
+			atual = itens;
+			
+			
+		//	while (!caminho.contains(dadoFim.toString()) && numAttempts <= this.arestas.size()+1 ) {
+			
+				for(Aresta<Tipo> subitens : this.arestas) {
+					distancia = itens.getPeso();
+					System.out.println("##############################");
+					System.out.println(itens.getInicio().getDado().toString()+"<>"+itens.getFim().getDado().toString());
+					System.out.println(distancia);
+					System.out.println(subitens.getInicio().getDado().toString()+"<>"+subitens.getFim().getDado().toString());
+			    if (subitens.getInicio().getDado().equals(atual.getFim().getDado()) && !caminho.contains(subitens.getFim().getDado().toString())) {
+					System.out.println(caminho.contains(subitens.getInicio().getDado().toString())); 
+					System.out.println(caminho.contains(subitens.getFim().getDado().toString())); 
+					System.out.println(caminho.contains(dadoFim.toString()));
+						if(!caminho.contains(subitens.getFim().getDado().toString()) 
+								&& !caminho.contains(dadoFim.toString())) {
+							caminho = caminho+subitens.getFim().getDado();
+							atual = subitens;
+							distancia = distancia+subitens.getPeso();
+							System.out.println(caminho);	
+							System.out.println("distancia = "+distancia);	
+							if(caminho.contains(dadoFim.toString())) {
+								    System.out.println("Menor distancia = "+menordistancia);	
+									if (distancia < menordistancia || menordistancia == -1L ) {
+										System.out.println("Menor distancia");	
+										menordistancia = distancia;
+										menorcaminho = caminho;	
+								}
+										
+							}
+						}
+					}
+			//		numAttempts = numAttempts+1;}
+			}
+		}
+		}
+		ArrayList<String> patch = new ArrayList<String>();
+		
+		for (char ch: menorcaminho.toCharArray()) {
+			patch.add(String.valueOf(ch));
+		}
+		
+		grafos = new DistancePath(menordistancia,patch);	
+		return grafos;
+	}
 
 	
-
+	
+	
 }

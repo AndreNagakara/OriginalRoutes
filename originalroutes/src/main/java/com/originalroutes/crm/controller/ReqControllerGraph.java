@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.originalroutes.crm.model.ArrayDistance;
 import com.originalroutes.crm.model.Dados;
+import com.originalroutes.crm.model.DadosdeConsulta;
+import com.originalroutes.crm.model.DistancePath;
 import com.originalroutes.crm.model.Grafo;
 import com.originalroutes.crm.model.GrafoResposta;
 import com.originalroutes.crm.model.Rota;
@@ -60,7 +63,7 @@ public class ReqControllerGraph {
     }
 	
 	@PostMapping("/routes/{id}/from/{t1}/to/{t2}")
-	public ResponseEntity<GrafoResposta> consultaRota(@PathVariable Long id, @PathVariable String t1, @PathVariable String t2, @RequestParam(required = false) Long maxStops ) {
+	public ResponseEntity<GrafoResposta> consultaRotagravada(@PathVariable Long id, @PathVariable String t1, @PathVariable String t2, @RequestParam(required = false) Long maxStops ) {
 		Grafo grafo = new Grafo();
 		Dados dados = dadosRepository.findOne(id);
 		
@@ -81,6 +84,100 @@ public class ReqControllerGraph {
 		return ResponseEntity.created(URI.create("/graph")).body(grafoResposta);
     }
 	
+	
+	@PostMapping("/distance")
+	public ResponseEntity<ArrayDistance> calculadistancia(@RequestBody Dados dados) {
+		Grafo grafo = new Grafo();
+		
+		for(int i=0; i < dados.getData().size(); i++)
+	    {
+			
+			Rota a = dados.getData().get(i);
+		  	grafo.adicionarVertice(a.getSource());
+		  	grafo.adicionarVertice(a.getTarget());
+		 	grafo.adicionarAresta(a.getDistance(), a.getSource(), a.getTarget());
+	     
+	    }
+		
+		ArrayDistance distancia = grafo.calculaDistancia(dados.getPath());
+		
+		//return ResponseEntity.created(URI.create("/graph")).body(null);
+		return ResponseEntity.created(URI.create("/graph")).body(distancia);
+    }
+	
+	@PostMapping("/distance/{id}")
+	public ResponseEntity<ArrayDistance> calculadistanciagravada(@PathVariable Long id, @RequestBody Dados dados) {
+		Grafo grafo = new Grafo();
+		Dados dadosgravados = dadosRepository.findOne(id);
+		
+		if (dadosgravados == null ) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		for(int i=0; i < dadosgravados.getData().size(); i++)
+	    {
+			
+			Rota a = dadosgravados.getData().get(i);
+		  	grafo.adicionarVertice(a.getSource());
+		  	grafo.adicionarVertice(a.getTarget());
+		 	grafo.adicionarAresta(a.getDistance(), a.getSource(), a.getTarget());
+	     
+	    }
+		
+		ArrayDistance distancia = grafo.calculaDistancia(dados.getPath());
+		
+		//return ResponseEntity.created(URI.create("/graph")).body(null);
+		return ResponseEntity.created(URI.create("/graph")).body(distancia);
+    }
+	
+	@PostMapping("/distance/from/{t1}/to/{t2}")
+	public ResponseEntity<DistancePath> distanciacompath(@PathVariable String t1,@PathVariable String t2, @RequestBody Dados dados) {
+		Grafo grafo = new Grafo();
+			
+		for(int i=0; i < dados.getData().size(); i++)
+	    {
+			
+			Rota a = dados.getData().get(i);
+		  	grafo.adicionarVertice(a.getSource());
+		  	grafo.adicionarVertice(a.getTarget());
+		 	grafo.adicionarAresta(a.getDistance(), a.getSource(), a.getTarget());
+	     
+	    }
+		
+		
+
+		DistancePath distancia = grafo.buscaMelhorRota(t1,t2);
+		
+		//return ResponseEntity.created(URI.create("/graph")).body(null);
+		return ResponseEntity.created(URI.create("/graph")).body(distancia);
+    }
+	
+	@PostMapping("/distance/{id}/from/{t1}/to/{t2}")
+	public ResponseEntity<DistancePath> distanciacompathgravada(@PathVariable Long id,@PathVariable String t1,@PathVariable String t2) {
+		Grafo grafo = new Grafo();
+		Dados dadosgravados = dadosRepository.findOne(id);
+	
+		if (dadosgravados == null ) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		for(int i=0; i < dadosgravados.getData().size(); i++)
+	    {
+			
+			Rota a = dadosgravados.getData().get(i);
+		  	grafo.adicionarVertice(a.getSource());
+		  	grafo.adicionarVertice(a.getTarget());
+		 	grafo.adicionarAresta(a.getDistance(), a.getSource(), a.getTarget());
+	     
+	    }
+		
+		
+
+		DistancePath distancia = grafo.buscaMelhorRota(t1,t2);
+		
+		//return ResponseEntity.created(URI.create("/graph")).body(null);
+		return ResponseEntity.created(URI.create("/graph")).body(distancia);
+    }
 	
 }
 

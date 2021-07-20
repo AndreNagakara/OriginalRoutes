@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class Routes {
+	
 	private String route;
 	private Long stops;
 	
