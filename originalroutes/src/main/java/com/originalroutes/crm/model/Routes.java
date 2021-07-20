@@ -1,7 +1,5 @@
 package com.originalroutes.crm.model;
 
-import java.util.ArrayList;
-
 import lombok.Data;
 
 @Data

@@ -1,11 +1,6 @@
 package com.originalroutes.crm.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-
 import lombok.Data;
 
 @Data
@@ -115,10 +110,6 @@ public class Grafo<Tipo> {
 	
 	public ArrayDistance calculaDistancia(ArrayList<String> array) {
 		ArrayDistance arrayDistance = new ArrayDistance();
-		ArrayList<Routes> rotas = new ArrayList<Routes>();
-		
-		Aresta<Tipo> atual = null;
-		
 		Long distancia = 0L;
 			
 
@@ -154,7 +145,6 @@ public class Grafo<Tipo> {
 		DistancePath grafos = new DistancePath(null,null);
 		Aresta<Tipo> atual = null;
 		
-		Long numAttempts = 0L;
 		Long menordistancia = -1L;
 		
 		String menorcaminho = "";
