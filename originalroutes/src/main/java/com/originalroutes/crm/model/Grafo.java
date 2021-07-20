@@ -109,7 +109,7 @@ public class Grafo<Tipo> {
 	}
 	
 	public ArrayDistance calculaDistancia(ArrayList<String> array) {
-		ArrayDistance arrayDistance = new ArrayDistance();
+		ArrayDistance arrayDistance = new ArrayDistance(null);
 		Long distancia = 0L;
 			
 
@@ -143,7 +143,15 @@ public class Grafo<Tipo> {
 	
 	public DistancePath buscaMelhorRota(Tipo dadoInicio, Tipo dadoFim) {
 		DistancePath grafos = new DistancePath(null,null);
+		ArrayList<String> patch = new ArrayList<String>();
 		Aresta<Tipo> atual = null;
+		
+		if (dadoInicio.equals(dadoFim)) {
+			patch.add(dadoInicio.toString());
+			patch.add(dadoInicio.toString());
+			grafos = new DistancePath(0L,patch);	
+			return grafos;
+		}
 		
 		Long menordistancia = -1L;
 		
@@ -156,7 +164,12 @@ public class Grafo<Tipo> {
 			Long distancia = itens.getPeso();
 			caminho = caminho+itens.getFim().getDado().toString();
 			atual = itens;
-			
+			if (itens.getInicio().getDado().equals(dadoInicio) && itens.getFim().getDado().equals(dadoFim)) {
+				patch.add(itens.getInicio().getDado().toString());
+				patch.add(itens.getFim().getDado().toString());
+				grafos = new DistancePath(itens.getPeso(),patch);	
+				return grafos;
+			}
 			
 		//	while (!caminho.contains(dadoFim.toString()) && numAttempts <= this.arestas.size()+1 ) {
 			
@@ -192,7 +205,7 @@ public class Grafo<Tipo> {
 			}
 		}
 		}
-		ArrayList<String> patch = new ArrayList<String>();
+		
 		
 		for (char ch: menorcaminho.toCharArray()) {
 			patch.add(String.valueOf(ch));

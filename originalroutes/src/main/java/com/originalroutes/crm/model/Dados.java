@@ -32,6 +32,11 @@ public class Dados {
 	public Long getId() {
         return this.id;
     }
+
+	public void setData(ArrayList<String> path,List<Rota> data) {
+		this.path = path;
+		this.data = data;
+	}
     
     
 }

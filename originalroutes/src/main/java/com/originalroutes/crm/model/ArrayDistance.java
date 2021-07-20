@@ -7,4 +7,7 @@ public class ArrayDistance {
 	
 	private Long distance;
 
+	public ArrayDistance(Long distance) {
+		this.distance = distance;
+	}
 }

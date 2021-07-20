@@ -14,6 +14,9 @@ import lombok.Data;
 @Entity
 public class Rota {
 	
+	
+	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@JsonIgnore
@@ -27,5 +30,8 @@ public class Rota {
 	
 	@Column(nullable = true)
 	private Long distance;
+	
+	
+
 }
 
