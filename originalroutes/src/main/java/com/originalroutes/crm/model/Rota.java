@@ -31,7 +31,11 @@ public class Rota {
 	@Column(nullable = true)
 	private Long distance;
 	
-	
+	public void Addtestrota(String source,String target, Long distance) {
+		this.source = source;
+		this.target = target;
+		this.source = source;
+	}
 
 }
 

@@ -56,7 +56,7 @@ public class ReqControllerGraph {
 	    }
 		GrafoResposta grafoResposta = grafo.buscaRotas(t1,t2,maxStops);
 			
-		return ResponseEntity.created(URI.create("/graph")).body(grafoResposta);
+		return ResponseEntity.ok(grafoResposta);
     }
 	
 	@PostMapping("/routes/{id}/from/{t1}/to/{t2}")
@@ -78,7 +78,7 @@ public class ReqControllerGraph {
 	    }
 		GrafoResposta grafoResposta = grafo.buscaRotas(t1,t2,maxStops);
 			
-		return ResponseEntity.created(URI.create("/graph")).body(grafoResposta);
+		return ResponseEntity.ok(grafoResposta);
     }
 	
 	
@@ -98,8 +98,7 @@ public class ReqControllerGraph {
 		
 		ArrayDistance distancia = grafo.calculaDistancia(dados.getPath());
 		
-		//return ResponseEntity.created(URI.create("/graph")).body(null);
-		return ResponseEntity.created(URI.create("/graph")).body(distancia);
+		return ResponseEntity.ok(distancia);
     }
 	
 	@PostMapping("/distance/{id}")
@@ -123,8 +122,10 @@ public class ReqControllerGraph {
 		
 		ArrayDistance distancia = grafo.calculaDistancia(dados.getPath());
 		
-		//return ResponseEntity.created(URI.create("/graph")).body(null);
-		return ResponseEntity.created(URI.create("/graph")).body(distancia);
+		
+		
+		
+		return ResponseEntity.ok(distancia);
     }
 	
 	@PostMapping("/distance/from/{t1}/to/{t2}")
@@ -140,13 +141,10 @@ public class ReqControllerGraph {
 		 	grafo.adicionarAresta(a.getDistance(), a.getSource(), a.getTarget());
 	     
 	    }
-		
-		
 
 		DistancePath distancia = grafo.buscaMelhorRota(t1,t2);
 		
-		//return ResponseEntity.created(URI.create("/graph")).body(null);
-		return ResponseEntity.created(URI.create("/graph")).body(distancia);
+		return ResponseEntity.ok(distancia);
     }
 	
 	@PostMapping("/distance/{id}/from/{t1}/to/{t2}")
@@ -167,13 +165,10 @@ public class ReqControllerGraph {
 		 	grafo.adicionarAresta(a.getDistance(), a.getSource(), a.getTarget());
 	     
 	    }
-		
-		
 
 		DistancePath distancia = grafo.buscaMelhorRota(t1,t2);
 		
-		//return ResponseEntity.created(URI.create("/graph")).body(null);
-		return ResponseEntity.created(URI.create("/graph")).body(distancia);
+		return ResponseEntity.ok(distancia);
     }
 	
 }

@@ -1,6 +1,10 @@
 package com.originalroutes.crm.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.Data;
 
 @Data
@@ -73,40 +77,100 @@ public class Grafo<Tipo> {
 		}
 	}
 	
-	public GrafoResposta buscaRotas(Tipo dadoInicio, Tipo dadoFim, Long maxStops) {
-		GrafoResposta grafos = new GrafoResposta(null);
-		ArrayList<Routes> rotas = new ArrayList<Routes>();
-		Long numAttempts = 0L;
-		Aresta<Tipo> atual = null;
-		for(Aresta<Tipo> itens : this.arestas) {	
-		String caminho = itens.getInicio().getDado().toString();
-		Long distancia = itens.getPeso();
-		Long stops = 0L;
-		atual = itens;		
-		if (itens.getInicio().getDado().equals(dadoInicio)) {
-			while (!caminho.contains(dadoFim.toString()) && numAttempts < 20) {
-				for(Aresta<Tipo> subitens : this.arestas) {
-					if (!subitens.getInicio().getDado().equals(atual.getFim().getDado())) {
-						atual = subitens;
-						if(!caminho.contains(subitens.getInicio().getDado().toString()) && !caminho.contains(subitens.getFim().getDado().toString()) && !caminho.contains(dadoFim.toString())) {
-							caminho = caminho+subitens.getInicio().getDado();
-							distancia = distancia+subitens.getPeso();
-							stops = stops+1;
-							if(caminho.contains(dadoFim.toString())) {
-								if(stops<=maxStops) {
-									Routes caminhos = new Routes(caminho, stops);
-									rotas.add(caminhos); 
-									grafos.setRoutes(rotas);								
-								}
-							}
-						}
-					}
-					numAttempts = numAttempts+1;}
+	
+	public ArrayList<Aresta<Tipo>> buscaAresta(Tipo dadoInicio) {
+		ArrayList<Aresta<Tipo>> novalista = new  ArrayList<Aresta<Tipo>>();
+		for(Aresta<Tipo> itens : this.arestas) {
+			if (itens.getInicio().getDado().equals(dadoInicio)) {
+				novalista.add(itens);
 			}
 		}
+		return novalista;
+	}
+	
+		public GrafoResposta buscaRotas(Tipo dadoInicio, Tipo dadoFim, Long maxStops) {
+			GrafoResposta grafos = new GrafoResposta(null);
+			ArrayList<Routes> rotas = new ArrayList<Routes>();
+			ArrayList<String> paths = new ArrayList<String>();
+			ArrayList<String> finalpaths = new ArrayList<String>();
+			String end = "0";
+			
+			if (maxStops == null) {
+				maxStops = 999999L;
+			}
+				
+			if (dadoInicio.equals(dadoFim)) {
+				Routes caminhos = new Routes(dadoInicio.toString(), 0L);
+				rotas.add(caminhos); 
+				grafos.setRoutes(rotas);
+				return grafos;
+			}
+			
+			
+				
+				for(Aresta<Tipo> itens : this.buscaAresta(dadoInicio)) {
+					paths.add(itens.getInicio().getDado().toString()+itens.getFim().getDado().toString());
+					
+				}
+				
+		   while (end.contains("0")) {	
+		   end = "1";
+		   ArrayList<String> newpaths = new ArrayList<String>();
+			for(String itens2 : paths) {
+				for(Aresta<Tipo> itens : this.buscaAresta( (Tipo) itens2.substring(itens2.length() - 1))) {
+
+					
+					if(!itens2.contains(itens.getFim().getDado().toString())){
+					if (!itens2.substring(itens2.length()- 1).toString().contains(dadoFim.toString())) {
+						newpaths.add(itens2+itens.getFim().getDado().toString());
+					}else {
+						newpaths.add(itens2);
+					}	
+				}
+			}
+			
 		}
+		
+		 for(String itens2 : newpaths) {
+		 if (!itens2.substring(itens2.length()- 1).toString().contains(dadoFim.toString())) {
+			 end = "0";
+				 }
+				 paths = new ArrayList<String>();
+				 paths = newpaths;
+				 }	 
+		   }
+		   ArrayList<String> newpaths = new ArrayList<String>();
+		   for (String itens2 : paths) {
+			   if (itens2.substring(itens2.length()- 1).toString().contains(dadoFim.toString())) {
+				   if (itens2.length()-1 <= maxStops ){
+				   newpaths.add(itens2);
+		   		   }
+			   }
+		   }
+		 
+		   paths = newpaths;
+		   
+	    
+		   Set<String> set = new HashSet<>(paths);
+		   paths.clear();
+		   paths.addAll(set);  
+		   
+		   Collections.sort(paths);
+		   Collections.sort(paths, (a, b)->Integer.compare(a.length(), b.length()));   
+	
+		   
+		for(String itens2 : paths) {
+			Routes caminhos = new Routes(itens2, (long) (itens2.length()-1));
+			rotas.add(caminhos); 
+			grafos.setRoutes(rotas);
+		}
+		
+		
 		return grafos;
 	}
+	
+	
+	
 	
 	public ArrayDistance calculaDistancia(ArrayList<String> array) {
 		ArrayDistance arrayDistance = new ArrayDistance(null);
@@ -125,7 +189,6 @@ public class Grafo<Tipo> {
 						loop = loop+1;	
 					}
 					if (loop == this.arestas.size()) {
-						System.out.println("-1");
 						loop = 0L;
 						arrayDistance.setDistance(loop-1);
 						return arrayDistance;
@@ -148,7 +211,6 @@ public class Grafo<Tipo> {
 		
 		if (dadoInicio.equals(dadoFim)) {
 			patch.add(dadoInicio.toString());
-			patch.add(dadoInicio.toString());
 			grafos = new DistancePath(0L,patch);	
 			return grafos;
 		}
@@ -158,7 +220,6 @@ public class Grafo<Tipo> {
 		String menorcaminho = "";
 		
 		for(Aresta<Tipo> itens : this.arestas) {	
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!");	
 		if (itens.getInicio().getDado().equals(dadoInicio)) {
 			String caminho = itens.getInicio().getDado().toString();
 			Long distancia = itens.getPeso();
@@ -171,29 +232,18 @@ public class Grafo<Tipo> {
 				return grafos;
 			}
 			
-		//	while (!caminho.contains(dadoFim.toString()) && numAttempts <= this.arestas.size()+1 ) {
+	
 			
 				for(Aresta<Tipo> subitens : this.arestas) {
 					distancia = itens.getPeso();
-					System.out.println("##############################");
-					System.out.println(itens.getInicio().getDado().toString()+"<>"+itens.getFim().getDado().toString());
-					System.out.println(distancia);
-					System.out.println(subitens.getInicio().getDado().toString()+"<>"+subitens.getFim().getDado().toString());
 			    if (subitens.getInicio().getDado().equals(atual.getFim().getDado()) && !caminho.contains(subitens.getFim().getDado().toString())) {
-					System.out.println(caminho.contains(subitens.getInicio().getDado().toString())); 
-					System.out.println(caminho.contains(subitens.getFim().getDado().toString())); 
-					System.out.println(caminho.contains(dadoFim.toString()));
 						if(!caminho.contains(subitens.getFim().getDado().toString()) 
 								&& !caminho.contains(dadoFim.toString())) {
 							caminho = caminho+subitens.getFim().getDado();
 							atual = subitens;
 							distancia = distancia+subitens.getPeso();
-							System.out.println(caminho);	
-							System.out.println("distancia = "+distancia);	
 							if(caminho.contains(dadoFim.toString())) {
-								    System.out.println("Menor distancia = "+menordistancia);	
 									if (distancia < menordistancia || menordistancia == -1L ) {
-										System.out.println("Menor distancia");	
 										menordistancia = distancia;
 										menorcaminho = caminho;	
 								}
@@ -201,7 +251,7 @@ public class Grafo<Tipo> {
 							}
 						}
 					}
-			//		numAttempts = numAttempts+1;}
+		
 			}
 		}
 		}

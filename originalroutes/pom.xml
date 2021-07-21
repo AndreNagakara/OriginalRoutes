@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.originalroutes.crm</groupId>
 	<artifactId>originalroutes.crm</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>originalroutes</name>
 	<description>API para gerar rotas</description>
 	<properties>
@@ -56,6 +56,13 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>spring-mock-mvc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		
 	</dependencies>
 	<build>
 		<plugins>
